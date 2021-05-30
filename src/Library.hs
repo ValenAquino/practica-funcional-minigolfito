@@ -12,12 +12,6 @@ data Habilidad = Habilidad {
   precisionJugador :: Number
 } deriving (Eq, Show)
 
--- Jugadores de ejemplo
-
-bart = UnJugador "Bart" "Homero" (Habilidad 25 60)
-todd = UnJugador "Todd" "Ned" (Habilidad 15 80)
-rafa = UnJugador "Rafa" "Gorgory" (Habilidad 10 1)
-
 data Tiro = UnTiro {
   velocidad :: Number,
   precision :: Number,
@@ -42,3 +36,31 @@ mayorSegun f a b
 ----------------------------------------------
 ---- Resolución del ejercicio
 ----------------------------------------------
+
+-- Punto 1:
+
+type Palo =  Jugador -> Tiro
+
+const :: p -> [Palo]
+const palosPermitidos = [putter, paloDeMadera, hierro 1, hierro 2, hierro 3, hierro 4, hierro 5, hierro 6, hierro 7, hierro 8, hierro 9, hierro 10]
+
+total :: String -> Jugador -> (Number -> Number) -> Number 
+total "Precision" jugador modificacionDelPalo = (modificacionDelPalo.precisionJugador.habilidad) jugador
+total "Fuerza" jugador modificacionDelPalo = (modificacionDelPalo.fuerzaJugador.habilidad) jugador
+
+putter :: Palo
+putter jugador = UnTiro 10 (total "Precision" jugador (2 *) ) 0 
+
+paloDeMadera :: Palo
+paloDeMadera jugador = UnTiro 100 (total "Precision" jugador (/2)) 5 
+
+hierro :: Number -> Palo
+hierro n jugador 
+ | n >= 3 = UnTiro (total "Fuerza" jugador (* n)) (total "Precision" jugador (/n)) (n-3)
+ | otherwise = UnTiro (total "Fuerza" jugador (* n)) (total "Precision" jugador (/n)) 0
+
+-- Punto 2
+
+golpe :: Jugador -> Palo -> Tiro
+golpe jugador palo = palo jugador
+
