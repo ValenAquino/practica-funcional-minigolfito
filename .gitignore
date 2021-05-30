@@ -2,4 +2,3 @@
 *.cabal
 *~
 .history
-stack.yaml.lock

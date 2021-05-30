@@ -1,6 +1,5 @@
-module Lib where
-
--- Modelo inicial
+module Library where
+import PdePreludat
 
 data Jugador = UnJugador {
   nombre :: String,
@@ -9,8 +8,8 @@ data Jugador = UnJugador {
 } deriving (Eq, Show)
 
 data Habilidad = Habilidad {
-  fuerzaJugador :: Int,
-  precisionJugador :: Int
+  fuerzaJugador :: Number,
+  precisionJugador :: Number
 } deriving (Eq, Show)
 
 -- Jugadores de ejemplo
@@ -20,19 +19,22 @@ todd = UnJugador "Todd" "Ned" (Habilidad 15 80)
 rafa = UnJugador "Rafa" "Gorgory" (Habilidad 10 1)
 
 data Tiro = UnTiro {
-  velocidad :: Int,
-  precision :: Int,
-  altura :: Int
+  velocidad :: Number,
+  precision :: Number,
+  altura :: Number
 } deriving (Eq, Show)
 
-type Puntos = Int
+type Puntos = Number
 
 -- Funciones útiles
 
-between n m x = elem x [n .. m]
+between :: (Eq a, Enum a) => a -> a -> a -> Bool
+between n m x = x `elem` [n .. m]
 
+maximoSegun :: Ord a1 => (a2 -> a1) -> [a2] -> a2
 maximoSegun f = foldl1 (mayorSegun f)
 
+mayorSegun :: Ord a => (p -> a) -> p -> p -> p
 mayorSegun f a b
   | f a > f b = a
   | otherwise = b
