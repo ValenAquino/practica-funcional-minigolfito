@@ -35,8 +35,6 @@ mayorSegun f a b
   | f a > f b = a
   | otherwise = b
 
-
-
 ----------------------------------------------
 ---- Resolución del ejercicio
 ----------------------------------------------
@@ -89,18 +87,19 @@ hoyo (UnTiro velocidadDelTiro precisionDelTiro alturaDelTiro)
 palosUtiles :: Jugador -> Obstaculo -> [Palo]
 palosUtiles jugadorBase obstaculo = filter (\palo -> (obstaculo.palo) jugadorBase /= tiroAnulado) palosPermitidos
 
-obstaculosSuperables :: Tiro -> [Obstaculo] -> Number
-obstaculosSuperables tiroBase (obstaculo:obstaculos)
- | tiroBase == tiroAnulado || null (obstaculo:obstaculos) = 0
- | otherwise = 1 + obstaculosSuperables (obstaculo tiroBase) obstaculos
+obstaculosSuperables :: [Obstaculo] -> Tiro -> Number
+obstaculosSuperables [] _ = 0
+obstaculosSuperables (obstaculo:obstaculos) tiroBase
+ | obstaculo tiroBase == tiroAnulado  = 0
+ | otherwise = 1 + obstaculosSuperables  obstaculos (obstaculo tiroBase)
 
---paloMasUtil :: Jugador -> [Obstaculo] -> Palo
---paloMasUtil jugador obstaculos = map obstaculosSuperables 
---paloMasUtil jugador = maximoSegun ((max.obstaculosSuperables) (golpe jugador))
 
--- takeWhile (a -> Bool) ([a])
--- filter will iterate through whole input iterator while takewhile will break once the predicate turn False,
--- if you have an iterator with 1st element that false to predicate, takewhile will break at 1st iteration and return empty
+paloMasUtil :: Jugador -> [Obstaculo] -> Palo
+paloMasUtil jugador obstaculo = snd (maximoSegun (obstaculosSuperables obstaculo.fst ) (listaDeTirosConCadaPalo jugador))
+
+
+listaDeTirosConCadaPalo :: Jugador -> [(Tiro, Palo)]
+listaDeTirosConCadaPalo jugador = map (\palo -> (palo jugador, palo)) palosPermitidos
 
 -- Punto 5
 

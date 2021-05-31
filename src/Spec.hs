@@ -63,10 +63,13 @@ correrTests = hspec $ do
       it "Un tiro con velocidad 5, altura 0 y presición de 96, logra superar el hoyo" $ do
          hoyo (UnTiro 5 96 0) `shouldBe` tiroAnulado  
 
--- describe "Punto 4" $ do
---    describe "obstaculos superables" $ do
---       it "Para un tiro de velocidad = 10, precisión = 95 y altura = 0, y una lista con dos túneles con rampita seguidos de un hoyo, el resultado sería 2" $ do
---          obstaculosSuperables (UnTiro 10 95 0) [tunelConRampita,tunelConRampita,hoyo] `shouldBe` 2
+ describe "Punto 4" $ do
+    describe "obstaculos superables" $ do
+       it "Para un tiro de velocidad = 10, precisión = 95 y altura = 0, y una lista con dos túneles con rampita seguidos de un hoyo, el resultado sería 2" $ do
+          obstaculosSuperables [tunelConRampita,tunelConRampita,hoyo] (UnTiro 10 95 0) `shouldBe` 2
+    describe "Palo mas util" $ do
+       it "el palo mas util" $ do
+          golpe bart (paloMasUtil bart [tunelConRampita, tunelConRampita, hoyo]) `shouldBe` UnTiro {velocidad = 10, precision = 120, altura =0}
 
 {--
    describe "Punto n" $ do
