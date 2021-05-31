@@ -5,7 +5,6 @@ import Test.Hspec
 import Control.Exception (evaluate)
 
 -- Jugadores de ejemplo
-
 bart :: Jugador
 bart = UnJugador "Bart" "Homero" (Habilidad 25 60)
 
@@ -14,6 +13,7 @@ todd = UnJugador "Todd" "Ned" (Habilidad 15 80)
 
 rafa :: Jugador
 rafa = UnJugador "Rafa" "Gorgory" (Habilidad 10 1)
+
 
 correrTests :: IO ()
 correrTests = hspec $ do
@@ -39,16 +39,41 @@ correrTests = hspec $ do
          golpe todd paloDeMadera `shouldBe` UnTiro 100 40 5
 
  describe "Punto 3" $ do
-   describe "" $ do
-      it "" $ do
-         2+2 `shouldBe` 4
+   describe "Tunel con Trampita" $ do
+      it "Con una precisión de 100 y altura 1, mi tiro no pasa el tunel" $ do
+         tunelConRampita (UnTiro 100 100 1) `shouldBe` tiroAnulado
+      it "Con una precisión de 90 y altura 0, mi tiro no pasa el tunel" $ do
+         tunelConRampita (UnTiro 100 90 0) `shouldBe` tiroAnulado
+      it "Con una precisión de 91 y altura 0, mi tiro pasa el tunel" $ do
+         tunelConRampita (UnTiro 100 91 0) `shouldBe` UnTiro 200 100 0
+   describe "Laguna" $ do
+      it "Con una velocidad de 80 y altura 4, mi tiro no pasa la laguna de 5 metros de largo" $ do
+          laguna 5 (UnTiro 80 100 4) `shouldBe` tiroAnulado
+      it "Con una velocidad de 120 y altura 0, mi tiro no pasa la laguna" $ do
+          laguna 5 (UnTiro 120 100 0) `shouldBe` tiroAnulado 
+      it "Con una velocidad de 81 y altura 1, mi tiro pasa la laguna de 5 metros de largo" $ do
+          laguna 5 (UnTiro 81 100 1) `shouldBe` UnTiro 81 100 (1/5)
+      it "Con una velocidad de 81 y altura 5, mi tiro pasa la laguna de 5 metros de largo" $ do
+          laguna 5 (UnTiro 81 100 5) `shouldBe` UnTiro 81 100 1
+   describe "Hoyo" $ do
+      it "Un tiro con velocidad 5, precisión 9 y altura 0 no consigue superar al hoyo" $ do
+         hoyo (UnTiro 5 9 0) `shouldBe` tiroAnulado
+      it "Un tiro con velocidad 20, precisión 9 y altura 0 no consigue superar al hoyo" $ do
+         hoyo (UnTiro 20 9 0) `shouldBe` tiroAnulado
+      it "Un tiro con velocidad 5, altura 0 y presición de 96, logra superar el hoyo" $ do
+         hoyo (UnTiro 5 96 0) `shouldBe` tiroAnulado  
 
+-- describe "Punto 4" $ do
+--    describe "obstaculos superables" $ do
+--       it "Para un tiro de velocidad = 10, precisión = 95 y altura = 0, y una lista con dos túneles con rampita seguidos de un hoyo, el resultado sería 2" $ do
+--          obstaculosSuperables (UnTiro 10 95 0) [tunelConRampita,tunelConRampita,hoyo] `shouldBe` 2
 
---------------------------------------
+{--
    describe "Punto n" $ do
       describe "" $ do
          it "" $ do
             2+2 `shouldBe` 4
+--}
 
 escribime :: Expectation
 escribime = implementame
