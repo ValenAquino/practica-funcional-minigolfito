@@ -2,7 +2,7 @@ module Spec where
 import PdePreludat
 import Library
 import Test.Hspec
-import Control.Exception (evaluate)
+import Control.Exception (evaluate, AsyncException (ThreadKilled))
 
 -- Jugadores de ejemplo
 bart :: Jugador
@@ -41,42 +41,44 @@ correrTests = hspec $ do
  describe "Punto 3" $ do
    describe "Tunel con Trampita" $ do
       it "Con una precisión de 100 y altura 1, mi tiro no pasa el tunel" $ do
-         tunelConRampita (UnTiro 100 100 1) `shouldBe` tiroAnulado
+         condicionDelTunelConRampita (UnTiro 100 100 1) `shouldBe` False
       it "Con una precisión de 90 y altura 0, mi tiro no pasa el tunel" $ do
-         tunelConRampita (UnTiro 100 90 0) `shouldBe` tiroAnulado
+         condicionDelTunelConRampita (UnTiro 100 90 0) `shouldBe` False 
       it "Con una precisión de 91 y altura 0, mi tiro pasa el tunel" $ do
-         tunelConRampita (UnTiro 100 91 0) `shouldBe` UnTiro 200 100 0
+         condicionDelTunelConRampita (UnTiro 100 91 0) `shouldBe` True 
    describe "Laguna" $ do
       it "Con una velocidad de 80 y altura 4, mi tiro no pasa la laguna de 5 metros de largo" $ do
-          laguna 5 (UnTiro 80 100 4) `shouldBe` tiroAnulado
+          condicionDeLaLaguna (UnTiro 80 100 4) `shouldBe` False 
       it "Con una velocidad de 120 y altura 0, mi tiro no pasa la laguna" $ do
-          laguna 5 (UnTiro 120 100 0) `shouldBe` tiroAnulado 
+          condicionDeLaLaguna (UnTiro 120 100 0) `shouldBe` False  
       it "Con una velocidad de 81 y altura 1, mi tiro pasa la laguna de 5 metros de largo" $ do
-          laguna 5 (UnTiro 81 100 1) `shouldBe` UnTiro 81 100 (1/5)
+          condicionDeLaLaguna (UnTiro 81 100 1) `shouldBe` True 
       it "Con una velocidad de 81 y altura 5, mi tiro pasa la laguna de 5 metros de largo" $ do
-          laguna 5 (UnTiro 81 100 5) `shouldBe` UnTiro 81 100 1
+          condicionDeLaLaguna (UnTiro 81 100 5) `shouldBe` True 
    describe "Hoyo" $ do
       it "Un tiro con velocidad 5, precisión 9 y altura 0 no consigue superar al hoyo" $ do
-         hoyo (UnTiro 5 9 0) `shouldBe` tiroAnulado
+         condicionDelHoyo (UnTiro 5 9 0) `shouldBe` False 
       it "Un tiro con velocidad 20, precisión 9 y altura 0 no consigue superar al hoyo" $ do
-         hoyo (UnTiro 20 9 0) `shouldBe` tiroAnulado
+         condicionDelHoyo (UnTiro 20 9 0) `shouldBe` False 
       it "Un tiro con velocidad 5, altura 0 y presición de 96, logra superar el hoyo" $ do
-         hoyo (UnTiro 5 96 0) `shouldBe` tiroAnulado  
+         condicionDelHoyo (UnTiro 5 96 0) `shouldBe` True   
 
+
+{--}
  describe "Punto 4" $ do
+    describe "Palos Utiles" $ do
+       it "La mejor manera de que bart supere un tunelConRampita, es con un putter" $ do
+          golpe bart (head (palosUtiles bart tunelConRampita)) `shouldBe` UnTiro {velocidad = 10, precision = 120, altura = 0}  
     describe "obstaculos superables" $ do
        it "Para un tiro de velocidad = 10, precisión = 95 y altura = 0, y una lista con dos túneles con rampita seguidos de un hoyo, el resultado sería 2" $ do
           obstaculosSuperables [tunelConRampita,tunelConRampita,hoyo] (UnTiro 10 95 0) `shouldBe` 2
     describe "Palo mas util" $ do
        it "el palo mas util" $ do
           golpe bart (paloMasUtil bart [tunelConRampita, tunelConRampita, hoyo]) `shouldBe` UnTiro {velocidad = 10, precision = 120, altura =0}
-
-{--
-   describe "Punto n" $ do
-      describe "" $ do
-         it "" $ do
-            2+2 `shouldBe` 4
---}
-
+ describe "Punto 5" $ do
+    describe "padresDeNiñosNoGanadores" $ do
+       it "Homero y Gorgory perdieron la apuesta porque bart hizo 9 puentos, tafa 9 y todd 10" $ do
+          padresDeNiñosNoGanadores [(bart, 9), (todd, 10), (rafa, 8)] `shouldBe` ["Homero","Gorgory"]
+{--}
 escribime :: Expectation
 escribime = implementame
